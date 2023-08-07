@@ -1,0 +1,83 @@
+<%- include('../layouts/admin-header.ejs')  %>
+
+
+
+<div id="content" class="p-4 p-md-5 pt-5">
+  <h2 class="mb-4">Dashboard</h2>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>title</th>
+        <th>conetent</th>
+        <th>Image</th>
+        <th>Delete</th>
+        <th>Edit</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% 
+      if(posts.length > 0) {
+        let i = 1;
+        posts.forEach(function(post) {
+          %>
+          <tr>
+          <td><%= i++; %></td>  
+          <td><%= post.title%></td>
+          <td><%= post.content%></td>
+          <td>
+            <img src="<%=post.image%>" alt="<%=post.image%>" width="100px">  
+          </td>
+          <td>
+          <a href="#" class="btn btn-danger deletePost" data-id="<%= post._id%>">Delete</a>  
+          </td>
+
+          <td>
+          <a href="/edit-post/<%=post._id%>" class="btn btn-warning">Edit</a>  
+          </td>
+          </tr>
+          <%
+        })
+
+      } else{
+        %>
+        <tr>
+          <td colspan="4"> No post found</td>
+          </tr>
+          <%
+      } 
+      %>
+    </tbody>
+  </table>
+</div>
+
+<script>
+$(document).ready(function(){
+  $('.deletePost').click(function(){
+    let postid = $(this).attr('data-id');
+    let obj  = $(this);
+
+  $.ajax({
+    url:"delete-post",
+    type:"POST",
+    data:{id:postid},
+    success:function(response){
+      if(response.success==true){
+
+
+        let socket = io();
+        socket.emit("delete_post",postid)
+        alert(response.message);
+        $(obj).parent().parent().remove();
+      }
+      else{
+        alert(response.message);
+      }
+    }
+  })
+  });
+}) ; 
+</script>
+
+<%- include('../layouts/admin-footer.ejs')  %>

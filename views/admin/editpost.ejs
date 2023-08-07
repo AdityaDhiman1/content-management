@@ -1,0 +1,129 @@
+<%- include('../layouts/admin-header.ejs') %>
+
+
+
+  <div id="content" class="p-4 p-md-5 pt-5">
+    <h2 class="mb-4">Update Post </h2>
+
+    <div class="container">
+      <form id="editPost" method="post" >
+        <div class="row mt-3">
+          <div class="col-sm-12">
+            <h5>Title</h5>
+          </div>
+        </div>
+
+        <div class="row mt-3">
+          <div class="col-sm-12">
+            <input type="hidden" name="id" value="<%= post._id%>">
+            <input type="text" value="<%= post.title%>" name="title" required class="w-100" placeholder="Enter post title">
+          </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-sm-12">
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadModal">
+                Upload Image
+              </button>
+              <input type="hidden" name="image" id="image" value="<%= post.image%>">
+            </div>
+          </div>
+
+          <div class="row mt-3">
+            <div class="col-sm-12">
+              <h5>Content</h5>
+            </div>
+          </div>
+
+        <div class="row mt-3">
+          <div class="col-sm-12">
+            <textarea name="content" placeholder="Enter Post content" class="w-100" required><%= post.content%></textarea>
+          </div>
+        </div>
+
+
+        <div class="row mt-3">
+          <div class="col-sm-12">
+            <input type="submit" value="Update Post" class="btn btn-warning">
+          </div>
+        </div>
+      </form>
+    </div>
+    <p style="color: green;" class="status"></p>
+  </div>
+
+  <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Upload</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="" id="uploadform" enctype="multipart/form-data">
+        <div class="modal-body">
+          <input type="file" name="image" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">upload</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+  <script>
+
+    $(document).ready(function () {
+
+      $("#editPost").submit(function () {
+        event.preventDefault();
+        let fromData = {};
+        $.each($(this).serializeArray(),function(i,field){
+          fromData[field.name] = field.value;
+        })
+        $.ajax({
+          url: "/update-post",
+          type: 'POST',
+          data:fromData,
+          success: function (data) {
+            if (data.success == true) {
+             $('.status').text(data.message)
+
+            } else {
+                $('.status').text(data.message)
+            }
+          }
+        })
+      })
+
+
+      $("#uploadform").submit(function () {
+        event.preventDefault();
+
+        $.ajax({
+          url: "/upload-post-image",
+          type: 'Post',
+          data: new FormData(this),
+          contentType: false,
+          cache: false,
+          processData: false,
+          success: function (data) {
+            if (data.success == true) {
+              $("#image").val(data.path)
+              alert(data.message)
+              $("#uploadModal").modal("hide")
+            } else {
+              alert(data.message)
+            }
+          }
+        })
+      })
+
+    })
+  </script>
+
+  <%- include('../layouts/admin-footer.ejs') %>
