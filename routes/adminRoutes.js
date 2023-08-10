@@ -6,7 +6,7 @@ const multer = require('multer')
 const path = require('path')
 const ejs = require('ejs')
 const session = require('express-session')
-const config = require('../config/config')
+require('dotenv').config()
 const adminLoginAuth = require('../middleware/adminLoginAuth')
 
 admin_route.use(bodyParser.json())
@@ -18,7 +18,7 @@ admin_route.use(express.static('public'))
 
 
 admin_route.use(session({
-    secret: config.sessionsecret,
+    secret: process.env.sessionsecret,
     resave: true,
     saveUninitialized:true
 }));

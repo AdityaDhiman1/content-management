@@ -2,7 +2,7 @@ const User = require('../models/usermodel');
 const bcrypt = require('bcrypt');
 const nodeemailer = require('nodemailer');
 const randomstring = require("randomstring");
-require('dotenv')
+require('dotenv').config()
 const adminControler = require('../controllers/admincontroller')
 const sendResetPassmail = async (name, email, token) => {
     try {

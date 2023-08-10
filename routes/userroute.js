@@ -1,9 +1,9 @@
 const express = require('express');
 const user_route = express();
+require('dotenv').config()
 const bodyParser = require('body-parser')
 const path = require('path')
 const session =require('express-session')
-const config = require('../config/config')
 user_route.use(bodyParser.json())
 const adminLoginAuth = require('../middleware/adminLoginAuth')
 user_route.use(bodyParser.urlencoded({ extended: true }))
@@ -16,7 +16,7 @@ user_route.use(express.static('public'))
 
 
 user_route.use(session({
-    secret: config.sessionsecret,
+    secret: process.env.sessionsecret,
     resave: true,
     saveUninitialized:true
 }));

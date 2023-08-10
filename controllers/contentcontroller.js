@@ -1,7 +1,7 @@
 const Post = require('../models/postmodel')
 const Setting = require('../models/settingmodal')
 const { ObjectId } = require('mongodb')
-const config = require('../config/config')
+require('dotenv').config();
 const nodemailer = require('nodemailer')
 
 const senCommentMail = async (name, email, post_id) => {
@@ -12,8 +12,8 @@ const senCommentMail = async (name, email, post_id) => {
             secure: true,
             requireTLS: true,
             auth: {
-                user: config.emailUser,
-                pass: config.emailPassword
+                user: process.env.emailUser,
+                pass: process.env.emailPassword
             }
        });
         let mailOptions = {
