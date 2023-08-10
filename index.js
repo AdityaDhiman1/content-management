@@ -1,4 +1,5 @@
-const  mongoose = require('mongoose');
+const mongoose = require('mongoose');
+require('dotenv').config()
 const  express = require('express');
 const app = express();
 const server = require('http').createServer(app);
@@ -8,14 +9,11 @@ const path = require('path');
 const PORT = process.env.PORT || 3000;
 const admin_route = require('./routes/adminRoutes')
 const user_route = require('./routes/userroute')
-const blog_route = require('./routes/blogroute')
-mongoose.connect("mongodb://127.0.0.1:27017/BMS").then(() => {
-    console.log('connection established')
-}).catch((err) => {
-    console.log('error connecting',err.message)
-})
-const isBlog = require('./middleware/isBlog')
-// app.use(express.static(path.join(__dirname + '/public')));
+const content_route = require('./routes/contentroute')
+const isRegister = require('./middleware/isregister');
+const connectDB = require('./DB/connection');
+app.use(isRegister.isRegister)
+
 io.on('connection', function (socket) {
     socket.on("new_post", function (formData) {
         socket.broadcast.emit("new_post", formData);
@@ -34,15 +32,23 @@ io.on('connection', function (socket) {
     })
 })
 
-app.use(isBlog.isBlog)
-
 app.use('/',admin_route)
 app.use('/',user_route)
-app.use('/',blog_route)
+app.use('/',content_route)
 
 
+const start = async () => { 
+    try {
+        server.listen(PORT, () => {
+            console.log(`listening on port ${PORT}`)
+        })
+        await connectDB(process.env.MONGODB_URL);
+    } catch (error) {
+        console.error(error.message)
+        
+    }
+}
 
-server.listen(PORT, () => {
-    console.log('listening on port',PORT)
-})
+start();
+
 

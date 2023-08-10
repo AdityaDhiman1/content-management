@@ -19,7 +19,7 @@
                         <%= posts[i].title %>
                     </h1>
                     <p>
-                        <%= posts[i].content %>
+                        <%- posts[i].content %>
                     </p>
                     <a class="btn btn-primary" href="/post/<%= posts[i]._id %>">Read More</a>
                 </div>
@@ -28,9 +28,71 @@
                 <h1>Post not available</h1>
                 <% } %>
     </div>
-
+    <div class="container mb-3">
+        <div class="text-center">
+            <input type="hidden" value="<%= post_limit %>" id="limitvalue">
+            <button class="btn btn-info text-dark" onclick="getPrevious()">Previous</button>
+            <button class="btn btn-info text-dark" onclick="getNext()">Next</button>
+            
+            </div>    
+    </div>
+    
     <script>
+let start = 0;
+let limit = parseInt(document.getElementById("limitvalue").value);
 
+function getNext() {
+    start += limit;
+    fetchPosts();
+    console.log(typeof(limit))
+}
+
+function getPrevious() {
+    if (start >= limit) {
+        start -= limit;
+        fetchPosts();
+    }
+}
+
+function fetchPosts() {
+    $.ajax({
+        url: `/get-posts/${start}/${limit}`,
+        type: "GET",
+        success: function (response) {
+            renderPost(response);
+        },
+        error: function (error) {
+            console.error("Error fetching posts:", error);
+        }
+    });
+}
+
+function renderPost(posts) {
+    let html = '';
+
+    if (posts.length > 0) {
+        for (let i = 0; i < posts.length; i++) {
+            const post = posts[i];
+            const imageSrc = post.image ? post.image : "https://dummyimage.com/900x400/dee2e6/6c757d.jpg";
+
+            html += `
+                <div class="row gx-4 gx-lg-5 align-items-center my-5" id="post-${post._id}">
+                    <div class="col-lg-7">
+                        <img class="img-fluid rounded mb-4 mb-lg-0" src="${imageSrc}" alt="...">
+                    </div>
+                    <div class="col-lg-5">
+                        <h1 class="font-weight-light">${post.title}</h1>
+                        <p>${post.content}</p>
+                        <a class="btn btn-primary" href="/post/${post._id}">Read More</a>
+                    </div>
+                </div>`;
+        }
+    } else {
+        html = "<p>No posts available.</p>";
+    }
+
+    $('.posts').html(html);
+}
         let socket = io();
 
         socket.on("delete_post",function(postId){

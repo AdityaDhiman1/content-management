@@ -2,7 +2,7 @@ const User = require('../models/usermodel');
 const bcrypt = require('bcrypt');
 const nodeemailer = require('nodemailer');
 const randomstring = require("randomstring");
-const config = require('../config/config')
+require('dotenv')
 const adminControler = require('../controllers/admincontroller')
 const sendResetPassmail = async (name, email, token) => {
     try {
@@ -13,12 +13,12 @@ const sendResetPassmail = async (name, email, token) => {
             secure: false,
             requireTLS: true,
             auth: {
-                user: config.emailUser,
-                pass: config.emailPassword,
+                user: process.env.emailUser,
+                pass: process.env.emailPassword,
               },
         })
         const mailOption = {
-            from: config.emailUser,
+            from: process.env.emailUser,
             to: email,
             subject: "Reset Password",
             html:  `<p> Hi ${name},</p><p>Please click the link below to reset your password:</p><a href="http://127.0.0.1:3000/reset-password?token=${token}">Reset Password</a>`
@@ -40,7 +40,7 @@ const loadlogin = async (req, res) => {
     try {
         res.render('login')
     } catch (error) {
-
+        console.log(error.message)
     }
 }
 

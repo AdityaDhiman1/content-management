@@ -1,11 +1,12 @@
 const Post = require('../models/postmodel')
+const Setting = require('../models/settingmodal')
 const { ObjectId } = require('mongodb')
 const config = require('../config/config')
 const nodemailer = require('nodemailer')
 
 const senCommentMail = async (name, email, post_id) => {
     try {
-       const transport =  nodemailer.createTransport({
+       let transport =  nodemailer.createTransport({
             host: "smpts.gmail.com",
             port: 587,
             secure: true,
@@ -15,7 +16,7 @@ const senCommentMail = async (name, email, post_id) => {
                 pass: config.emailPassword
             }
        });
-        const mailOptions = {
+        let mailOptions = {
             from: "BMS",
             to: email,
             subject: "new reply",
@@ -36,10 +37,13 @@ const senCommentMail = async (name, email, post_id) => {
     }
 }
 
-const loadBlog = async (req, res) => {
+const loadContent = async (req, res) => {
     try {
-        const posts = await Post.find({})
-        res.render('blog', { posts: posts })
+
+        let setting = await Setting.findOne({});
+        let limit = setting.post_limit;
+        let posts = await Post.find({}).limit(limit)
+        res.render('content', { posts: posts,post_limit: limit})
     } catch (error) {
         console.log(error.message);
 
@@ -99,9 +103,25 @@ const doreply = async (req, res) => {
         res.status(200).send({ success: false, message: error.message });
     }
 }
+
+const getPosts = async (req, res) => {
+    try {
+        let limit = parseInt(req.params.limit);
+        let skip = parseInt(req.params.start); 
+        
+        let posts = await Post.find({}).skip(skip).limit(limit);
+        
+        res.send(posts);
+    } catch (error) {
+        res.status(500).send({ success: false, message: "An error occurred." });
+        console.error("Error in getPosts:", error.message);
+    }
+}
+
 module.exports = {
-    loadBlog,
+    loadContent,
     loadpost,
     addcomment,
-    doreply
+    doreply,
+    getPosts
 }

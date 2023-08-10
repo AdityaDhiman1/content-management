@@ -32,9 +32,10 @@ const storage = multer.diskStorage({
         cb(null,name)
     }
 })
-const upload = multer({storage: storage})
-admin_route.get('/blog-setup', admincontroller.blogSetup)
-admin_route.post('/blog-setup', upload.single('blog_image'), admincontroller.blogSetupsave)
+const upload = multer({ storage: storage })
+
+admin_route.get('/register', admincontroller.loadRegister)
+admin_route.post('/register', upload.single('image'), admincontroller.registerAdmin)
 admin_route.get('/dashboard', adminLoginAuth.isLogin,   admincontroller.dashboard)
 admin_route.get('/create-post',adminLoginAuth.isLogin, admincontroller.loadpost)
 admin_route.post('/create-post',adminLoginAuth.isLogin, admincontroller.addPost)
@@ -42,5 +43,9 @@ admin_route.post('/delete-post',adminLoginAuth.isLogin, admincontroller.deletePo
 admin_route.post('/upload-post-image',  upload.single('image'),adminLoginAuth.isLogin, admincontroller.uploadimage)
 admin_route.get('/edit-post/:id',adminLoginAuth.isLogin, admincontroller.loadEditpost)
 admin_route.post('/update-post',adminLoginAuth.isLogin, admincontroller.updatePost)
+admin_route.get('/settings',adminLoginAuth.isLogin, admincontroller.loadSetting)
+admin_route.post('/settings',adminLoginAuth.isLogin, admincontroller.saveSetting)
+
+
 
 module.exports = admin_route;

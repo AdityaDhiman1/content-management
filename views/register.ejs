@@ -1,17 +1,17 @@
-<%- include('./layouts/header.ejs' )%>
+<!-- <%- include('./layouts/admin-header.ejs' )%> -->
 
 <div class="container">
-  <h1>Blog Stup </h1>
+  <h1> Register  </h1>
   <form action="" method="POST" enctype="multipart/form-data">
     <div class="row">
       <div class="col-sm-20">
-        <input type="text" name="blog_title" placeholder="Enter blog title here" required>
+        <input type="text" name="title" placeholder="Enter  title here" required>
 
       </div>
     </div>
     <div class="row mt-3">
       <div class="col-sm-20">
-        <input type="file" name="blog_image" required>
+        <input type="file" name="image" required>
 
       </div>
     </div>
@@ -44,7 +44,7 @@
 
     <div class="row mt-3">
       <div class="col-sm-20">
-        <input type="submit" class="btn btn-primary" value="Blog setup">
+        <input type="submit" class="btn btn-primary" value=" setup">
 
       </div>
     </div>
@@ -58,4 +58,4 @@
 <%
     }
 %>
-<%- include('./layouts/footer.ejs' )%>
+<%- include('./layouts/admin-footer.ejs' )%>

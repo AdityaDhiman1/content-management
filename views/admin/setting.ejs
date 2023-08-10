@@ -1,0 +1,35 @@
+<%- include('../layouts/admin-header.ejs')%>
+<div id="content" class="p-4 md-5 pt-5">
+    <h2>Settings</h2>
+    <form id="setting-form">
+        <input type="text" name="limit" placeholder="Post Limit" class="mb-3 w-100" required value="<%= limit  %>">
+        <input type="submit" value="Page Seting" class="btn btn-info">
+
+    </form>
+    <p class="result" style="color: green;"></p>
+</div>
+
+<script>
+$(document).ready(function(){
+    $("#setting-form").submit(function(event){
+        event.preventDefault();
+        let formData = $(this).serialize();
+
+        $.ajax({
+            url: '/settings',
+            type: 'POST',
+            data: formData,
+            success: function(response){
+                $('.result').text(response.message);
+            },
+            error: function(xhr, status, error) {
+                console.log("AJAX request error:", error);
+                $('.result').text("An error occurred while processing your request.");
+            }
+        });
+    });
+});
+
+
+</script>
+<%- include('../layouts/admin-footer.ejs')%>

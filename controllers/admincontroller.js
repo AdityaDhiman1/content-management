@@ -1,6 +1,7 @@
-const BlogSetting = require('../models/blogSettingModel')
 const User = require('../models/usermodel')
+const Register = require('../models/registermodal')
 const Post = require('../models/postmodel')
+const Setting = require('../models/settingmodal')
 const bcrypt = require('bcrypt')
 
 const securepassword = async (password) => {
@@ -12,54 +13,52 @@ const securepassword = async (password) => {
 
     }
 }
-const login = async (reqq, res) => {
-    res.send("login")
-}
 
-const blogSetup = async (req, res) => {
+const loadRegister = async (req, res) => {
     try {
-        var blogsetting = await BlogSetting.find({})
-        if (blogsetting.length > 0) {
+        let register = await Register.find({})
+        if (register.length > 0) {
             res.redirect('/login')
         } else {
-            res.render('blogSetup')
+            res.render('register')
         }
     } catch (error) {
         console.log(error.message)
-
     }
-}
-const blogSetupsave = async (req, res) => {
+};
+    
+const registerAdmin = async (req, res) => {
     try {
-        const blag_title = req.body.blog_title
-        const blog_image = req.file.filename
-        const description = req.body.description
-        const email = req.body.email
-        const name = req.body.name
-        const password = await securepassword(req.body.password)
+        let title = req.body.title
+        let image = req.file.filename
+        let description = req.body.description
+        let email = req.body.email
+        let name = req.body.name
+        let password = await securepassword(req.body.password)
 
-        const blogsetting = new BlogSetting({
-            blag_title: blag_title,
-            bllog_logo: blog_image,
+        let register = new Register({
+            title: title,
+            logo: image,
             description: description,
         })
-        await blogsetting.save();
+        await register.save();
 
-        const user = new User({
+        let user = new User({
             name: name,
             email: email,
             password: password,
             is_admin: 1
         })
-        const userData = await user.save();
+        let userData = await user.save();
         if (userData) {
             res.redirect('/login')
         } else {
-            res.render('/blogSetup', { message: "Blog not setup" })
+            res.render('/register', { message: "Not Setup" })
         }
 
+
     } catch (error) {
-        console.log(error.message)
+        console.log("error Setupsave ",error.message)
 
     }
 }
@@ -86,28 +85,27 @@ const loadpost = (req, res) => {
 const addPost = async (req, res) => {
     try {
 
-        var image = '';
+        let image = '';
         if (req.body.image !== undefined) {
             image = req.body.image;
 
         }
-        const post = new Post({
+        let post = new Post({
             title: req.body.title,
             content: req.body.content,
             image: image
         });
-        const postData = await post.save();
+        let postData = await post.save();
         res.send({success:true,message:"Post added successfully",_id:postData._id})
 
     } catch (error) {
         res.send({success:false,message:error.message})
-
     }
 }
 
 const uploadimage = async (req, res) => {
     try {
-        var imagePath = '/images';
+        let imagePath = '/images';
         imagePath = imagePath + '/' + req.file.filename;
         res.send({ success: true, message: "Post image uploaded successfully", path: imagePath })
 
@@ -159,10 +157,38 @@ const updatePost = async (req, res) => {
     }
 }
 
+const loadSetting = async(req,res)=> {
+    try {
+       let setting  = await Setting.findOne({})
+        let postlimit = 0;
+        if (setting != null) { 
+            postlimit= setting.post_limit
+
+        }
+        res.render('admin/setting', { limit: postlimit });
+        
+    } catch (error) {
+        console.log(error.message)
+    }
+    
+}
+
+const saveSetting = async (req, res) => {
+    try {
+        await Setting.updateOne({}, {
+            post_limit: req.body.limit
+        }, {
+            upsert:true
+        });
+        res.status(200).send({ success: true, message: "Setting updated!" })
+        
+    } catch (error) {
+        res.status(400).send({ success: false, message: error.message })
+    }
+}
 module.exports = {
-    login,
-    blogSetup,
-    blogSetupsave,
+    loadRegister,
+    registerAdmin,
     dashboard,
     loadpost,
     securepassword,
@@ -171,4 +197,6 @@ module.exports = {
     deletePost,
     loadEditpost,
     updatePost,
+    loadSetting,
+    saveSetting,
 }
