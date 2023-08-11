@@ -1,56 +1,56 @@
 <%- include('../layouts/admin-header.ejs')  %>
 
-
-
 <div id="content" class="p-4 p-md-5 pt-5">
   <h2 class="mb-4">Dashboard</h2>
 
-  <table class="table">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>title</th>
-        <th>conetent</th>
-        <th>Image</th>
-        <th>Delete</th>
-        <th>Edit</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% 
-      if(posts.length > 0) {
-        let i = 1;
-        posts.forEach(function(post) {
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>Content</th>
+          <th>Image</th>
+          <th>Delete</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% 
+        if (posts.length > 0) {
+          let i = 1;
+          posts.forEach(function(post) {
+            %>
+            <tr>
+              <td><%= i++; %></td>
+              <td><%= post.title %></td>
+              <td><%= post.content %></td>
+              <td>
+                <img src="<%= post.image %>" alt="<%= post.image %>" width="100px">
+              </td>
+              <td>
+                <a href="#" class="btn btn-danger deletePost" data-id="<%= post._id %>">Delete</a>
+              </td>
+              <td>
+                <a href="/edit-post/<%= post._id %>" class="btn btn-warning">Edit</a>
+              </td>
+            </tr>
+            <%
+          })
+
+        } else {
           %>
           <tr>
-          <td><%= i++; %></td>  
-          <td><%= post.title%></td>
-          <td><%= post.content%></td>
-          <td>
-            <img src="<%=post.image%>" alt="<%=post.image%>" width="100px">  
-          </td>
-          <td>
-          <a href="#" class="btn btn-danger deletePost" data-id="<%= post._id%>">Delete</a>  
-          </td>
-
-          <td>
-          <a href="/edit-post/<%=post._id%>" class="btn btn-warning">Edit</a>  
-          </td>
+            <td colspan="6"> No post found</td>
           </tr>
           <%
-        })
-
-      } else{
+        }
         %>
-        <tr>
-          <td colspan="4"> No post found</td>
-          </tr>
-          <%
-      } 
-      %>
-    </tbody>
-  </table>
+      </tbody>
+    </table>
+  </div>
 </div>
+
 
 <script>
 $(document).ready(function(){
